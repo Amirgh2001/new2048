@@ -1,6 +1,11 @@
 let board, Score=0, rows=4, columns=4;
-items = [2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2];
+items = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4];
 indexes = [0, 1, 2, 3];
+
+if (!localStorage.getItem("topScore")) {
+    localStorage.setItem("topScore", 0);
+}
+
 window.addEventListener("load", () => {
     let lastTopScore = localStorage.getItem("topScore");
     document.getElementById("topScoreValue").innerText = lastTopScore.toString();
@@ -13,7 +18,6 @@ let startGame = () => {
         [0,0,0,0],
         [0,0,0,0]
     ];
-    firstTwoTilesGenerator()
 
     for (let i=0; i<rows; i++) {
         for (let j = 0; j < columns; j++) {
@@ -24,28 +28,10 @@ let startGame = () => {
             document.getElementById("board").append(tile);
         }
     }
+    newCellCreator();
+    newCellCreator();
 }
-let firstTwoTilesGenerator = () => {
-    while (true) {
-        let u1 = Math.floor(Math.random() * 4);
-        let v1 = Math.floor(Math.random() * 4);
-        let u2 = Math.floor(Math.random() * 4);
-        let v2 = Math.floor(Math.random() * 4);
-        if (u1 === v1 && u2 === v2) {
-            board = [
-                [0,0,0,0],
-                [0,0,0,0],
-                [0,0,0,0],
-                [0,0,0,0]
-            ];
-            firstTwoTilesGenerator()
-        } else {
-            board[u1][v1] = 2;
-            board[u2][v2] = 2;
-            break
-        }
-    }
-}
+
 let setTile = (tile, number) => {
     tile.innerText = "";
     tile.classList.value = "";
