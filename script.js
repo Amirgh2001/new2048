@@ -6,6 +6,7 @@ if (!localStorage.getItem("topScore")) {
     localStorage.setItem("topScore", 0);
 }
 
+
 window.addEventListener("load", () => {
     let lastTopScore = localStorage.getItem("topScore");
     document.getElementById("topScoreValue").innerText = lastTopScore.toString();
