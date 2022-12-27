@@ -1,4 +1,6 @@
-
+* {
+    user-select: none;
+}
 body {
     align-items: center;
     text-align: center;
@@ -80,16 +82,44 @@ hr {
     color: white;
 }
 #GameOver {
-    width: 250px;
-    height: 150px;
-    background-color: red;
     position: fixed;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    width:100%;
+    height:100%;
     display: none;
     text-align: center;
+    align-items: center;
+    justify-content: center;
+    background:rgba(3,233,132,0.3);
 }
-#gameOverText {
-    font-size: large;
-    color: white;
+.gameOverContent{
+    display: flex;
     text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+    height: 150px;
+    background: rgba(255, 0, 0, 0.7);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border-radius: 5px;
+    flex-direction: column;
+}
+.gameOverContent span:nth-child(2){
+    margin-top: 20px;
+    color: white;
+}
+
+#gameOverText {
+    font-size: x-large;
+    color: white;
+}
+#newGame {
+    cursor: pointer;
+    z-index: 1000000;
+    display: inline;
+}
+#topScore {
+    margin-top: 20px;
+    transition: all 700ms ease-in-out;
 }

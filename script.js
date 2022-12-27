@@ -1,5 +1,5 @@
-let board, Score=0, rows=4, columns=4;
-items = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4];
+let board, Score=0, rows=4, columns=4, a=false, s=false, d=false, f=false, lastStepBoard;
+items = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4];
 indexes = [0, 1, 2, 3];
 
 if (!localStorage.getItem("topScore")) {
@@ -41,22 +41,66 @@ let setTile = (tile, number) => {
         tile.classList.add(`tile${number.toString()}`);
     }
 }
-document.addEventListener("keydown", (ev) => {
+
+function throttleDecorator(func , delay )
+{
+    let canRecall = true
+    let firstTime = true
+    let timer = Date.now()
+
+    const thruttledFunc = function (...args) {
+        if (canRecall && (firstTime || Date.now() - timer > delay*1000)) {
+            firstTime= false
+            canRecall = false
+            timer = Date.now()
+            func(...args)
+        }
+    }
+
+    let letCallFunc = ()=>
+    {
+        canRecall = true
+    }
+
+    return [thruttledFunc , letCallFunc]
+}
+const pressHandler = (ev) => {
+    console.log('callback called')
     switch (ev.code) {
         case "ArrowLeft":
+            lastStepBoard = [...board];
             slideLeft();
+            if (JSON.stringify(lastStepBoard) !== JSON.stringify(board)) {
+                a = true
+            }
             break;
         case "ArrowUp":
+            lastStepBoard = [...board];
             slideUp();
+            if (JSON.stringify(lastStepBoard) !== JSON.stringify(board)) {
+                s = true
+            }
             break;
         case "ArrowRight":
+            lastStepBoard = [...board];
             slideRight();
+            if (JSON.stringify(lastStepBoard) !== JSON.stringify(board)) {
+                d = true
+            }
             break;
         case "ArrowDown":
+            lastStepBoard = [...board];
             slideDown();
+            if (JSON.stringify(lastStepBoard) !== JSON.stringify(board)) {
+                f = true
+            }
             break;
     }
-})
+}
+
+const [keyPressHandler , letKeyPressRecall ] = throttleDecorator(pressHandler,0)
+
+document.addEventListener("keydown",keyPressHandler )
 let slideLeft = () => {
     for (let i = 0; i < rows; i++) {
         let row = board[i];
@@ -157,40 +201,45 @@ let slideDown = () => {
     }
 }
 let newCellCreator = () => {
+    let random2_4 = items[Math.floor(Math.random()*(items.length))];
     let x = indexes[Math.floor(Math.random()*4)]
     let y = indexes[Math.floor(Math.random()*4)]
     if (board[x][y] === 0) {
         let tile = document.getElementById(`${x.toString()}-${y.toString()}`);
-        board[x][y] = 2;
-        setTile(tile, 2)
+        board[x][y] = random2_4;
+        setTile(tile, random2_4);
     } else {
         newCellCreator()
     }
 }
-document.addEventListener("keyup", (ev) => {
-    switch (ev.code) {
-        case "ArrowLeft":
-            newCellCreator()
-            break;
-        case "ArrowUp":
-            newCellCreator()
-            break;
-        case "ArrowRight":
-            newCellCreator()
-            break;
-        case "ArrowDown":
-            newCellCreator()
-            break;
+document.addEventListener("keyup", () => {
+    letKeyPressRecall()
+    if (a) {
+        newCellCreator()
+         a = false
+    } else if (s) {
+        newCellCreator()
+        s = false
+    } else if (d) {
+        newCellCreator()
+        d = false
+    } else if (f) {
+        newCellCreator()
+        f = false
     }
     document.getElementById("score").innerText = Score.toString();
     if (noZeros()) {
         if (gameOver()) {
+            document.getElementById("topScore").style.marginTop = "60px";
             if (Score > localStorage.getItem("topScore")) {
                 localStorage.setItem("topScore", Score);
                 let lastTopScore = localStorage.getItem("topScore");
                 document.getElementById("topScoreValue").innerText = lastTopScore.toString();
             }
             document.getElementById("GameOver").style.display = "flex";
+            document.getElementById("GameOver").addEventListener("click", () => {
+                location.reload();
+            })
         }
     }
 })
@@ -223,8 +272,21 @@ let gameOver = () => {
     }
     return true
 }
+let compareMatrix = (mat1, mat2) => {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (mat1[i][j] !== mat2[i][j]) {
+                return false
+            }
+        }
+    }
+    return true
+}
 
 let newGame = document.getElementById("newGame")
 newGame.addEventListener("click", () => {
+    if (Score > localStorage.getItem("topScore")) {
+        localStorage.setItem("topScore", Score);
+    }
     location.reload()
 })
